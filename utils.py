@@ -33,5 +33,8 @@ def process_video(request_video: BinaryIO):
 def response_video(age_genders, bboxes, confs):
     response = []
     for age_gender, bbox, conf in zip(age_genders, bboxes, confs):
-        response.append(create_face_dict(age_gender[0], bbox[0], conf[0]))
+        try:
+            response.append(create_face_dict(age_gender[0], bbox[0], conf[0]))
+        except IndexError:
+            continue
     return response

@@ -248,7 +248,7 @@ class Detector(Wrapper):
             confidences.tolist(),
             self.conf_threshold,
             self.iou_threshold,
-        ).flatten()
+        )
         if len(indices) > 0:
             mlvl_bboxes = bboxes_wh[indices]
             confidences = confidences[indices]
