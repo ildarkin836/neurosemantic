@@ -1,0 +1,26 @@
+services:
+  tritonserver:
+    container_name: triton_server
+    image: nvcr.io/nvidia/tritonserver:24.07-py3
+    ipc: host
+    network_mode: "host"  
+    volumes:
+      - ./models:/models
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8000/v2/health/ready"]
+        interval: 10s
+        timeout: 10s
+        retries: 20
+    command: /opt/tritonserver/bin/tritonserver --model-repository=/models --strict-model-config=false
+    restart: always
+  
+  web_server:
+    container_name: web_server
+    build: .
+    ipc: host
+    network_mode: "host"
+    command: python /opt/neurosemantic/app_run.py
+    depends_on:
+      tritonserver:
+        condition: service_healthy
+      
