@@ -7,7 +7,7 @@ import fastapi
 import numpy as np
 
 import uvicorn
-from fastapi import FastAPI, File, Header, Request, UploadFile, Response, status
+from fastapi import FastAPI, File, Header, Request, UploadFile, Response, status, HTTPException
 from config import config
 from utils import *
 
@@ -42,6 +42,8 @@ app = FastAPI()
 @app.post("/recognize_image", response_model=list[BaseResponse])
 async def recognize_image(img: UploadFile = File(...)):
     decoded_img = decode_image(img)
+    if decoded_img is None:
+        raise HTTPException(status_code=400, detail="its not image")
     age_gender, bboxes, confs = ensemble_model(decoded_img)
     if age_gender is None:
         return []
@@ -57,7 +59,7 @@ async def recognize_video(video: UploadFile = File(...)):
             with temp as f:
                 f.write(contents)
         except Exception:
-            return {"message": "There was an error uploading the file"}
+            raise HTTPException(status_code=400, detail="There was an error uploading the file")
         finally:
             video.file.close()
 
@@ -72,7 +74,7 @@ async def recognize_video(video: UploadFile = File(...)):
             confs.append(conf)
         response = response_video(age_genders, bboxs, confs)
     except Exception:
-        return {"message": "There was an error processing the file"}
+        raise HTTPException(status_code=400, detail="There was an error processing the file")
     finally:
         os.remove(temp.name)
 
