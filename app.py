@@ -53,29 +53,29 @@ async def recognize_image(img: UploadFile = File(...)):
 @app.post("/recognize_video", response_model=list[BaseResponse])
 async def recognize_video(video: UploadFile = File(...)):
     temp = NamedTemporaryFile(delete=False)
-    # try:
     try:
-        contents = video.file.read()
-        with temp as f:
-            f.write(contents)
-    except Exception:
-        raise HTTPException(status_code=400, detail="There was an error uploading the file")
-    finally:
-        video.file.close()
+        try:
+            contents = video.file.read()
+            with temp as f:
+                f.write(contents)
+        except Exception:
+            raise HTTPException(status_code=400, detail="There was an error uploading the file")
+        finally:
+            video.file.close()
 
-    frames = process_video(temp.name)
-    age_genders = []
-    bboxs = []
-    confs = []
-    for frame in frames:
-        age_gender, bboxes, conf = ensemble_model(frame)
-        age_genders.append(age_gender)
-        bboxs.append(bboxes)
-        confs.append(conf)
-    response = response_video(age_genders, bboxs, confs)
-    # except Exception:
-    #     raise HTTPException(status_code=400, detail="There was an error processing the file")
-    # finally:
-    #     os.remove(temp.name)
+        frames = process_video(temp.name)
+        age_genders = []
+        bboxs = []
+        confs = []
+        for frame in frames:
+            age_gender, bboxes, conf = ensemble_model(frame)
+            age_genders.append(age_gender)
+            bboxs.append(bboxes)
+            confs.append(conf)
+        response = response_video(age_genders, bboxs, confs)
+    except Exception:
+        raise HTTPException(status_code=400, detail="There was an error processing the file")
+    finally:
+        os.remove(temp.name)
 
     return response
