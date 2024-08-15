@@ -25,20 +25,18 @@ triton_port = config.triton_port
 fastapi_port = config.fastapi_port
 
 
-ensemble_model = Ensemble(url=f"{triton_ip}:{triton_port}", 
-                        detector_model_name="face_detection",
-                        classifier_model_name="classifier",
-                        detector_conf_threshold=config.det_threshold,
-                        detector_iou_threshold=config.iou_threshold
-                        )
+ensemble_model = Ensemble(
+    url=f"{triton_ip}:{triton_port}",
+    detector_model_name="face_detection",
+    classifier_model_name="classifier",
+    detector_conf_threshold=config.det_threshold,
+    detector_iou_threshold=config.iou_threshold,
+)
 
 
 logger = logging.getLogger("NeuroSemantic")
 logger.setLevel("INFO")
 app = FastAPI()
-
-
-
 
 
 @app.post("/recognize_image", response_model=list[BaseResponse])
@@ -62,7 +60,7 @@ async def recognize_video(video: UploadFile = File(...)):
             return {"message": "There was an error uploading the file"}
         finally:
             video.file.close()
-        
+
         frames = process_video(temp.name)
         age_genders = []
         bboxs = []
@@ -77,6 +75,5 @@ async def recognize_video(video: UploadFile = File(...)):
         return {"message": "There was an error processing the file"}
     finally:
         os.remove(temp.name)
-        
+
     return response
-    

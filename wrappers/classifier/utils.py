@@ -4,8 +4,9 @@ import numpy as np
 mean = (0.485, 0.456, 0.406)
 std = (0.229, 0.224, 0.225)
 
+
 def letterbox(im, new_shape=(224, 224), color=(0, 0, 0), scaleup=True):
-    """ This function is used to letterbox the image.
+    """This function is used to letterbox the image.
 
     Args:
         im (_type_): _description_.
@@ -15,7 +16,7 @@ def letterbox(im, new_shape=(224, 224), color=(0, 0, 0), scaleup=True):
 
     Returns:
         im (np.array): Processed image.
-    """        
+    """
     # Resize and pad image while meeting stride-multiple constraints
     shape = im.shape[:2]  # current shape [height, width]
     if isinstance(new_shape, int):
@@ -41,11 +42,13 @@ def letterbox(im, new_shape=(224, 224), color=(0, 0, 0), scaleup=True):
         im = cv2.resize(im, new_unpad, interpolation=cv2.INTER_LINEAR)
     top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
     left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
-    img = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # add border
-    
+    img = cv2.copyMakeBorder(
+        im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color
+    )  # add border
+
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = img / 255.0
-    
+
     img = (img - mean) / std
     img = img.astype(dtype=np.float32)
     img = img.transpose((2, 0, 1))
