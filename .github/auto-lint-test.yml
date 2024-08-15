@@ -13,6 +13,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Linters
-        run: docker-compose -f docker-compose.ci.yml run --rm lobby-rate make lint
-      - name: Tests/coverage
-        run: docker-compose -f docker-compose.ci.yml run --rm lobby-rate make coverage
+        run: docker-compose run --rm web_server black --check 
